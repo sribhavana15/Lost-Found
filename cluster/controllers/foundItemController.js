@@ -64,3 +64,15 @@ exports.searchFoundItems = async (req, res) => {
     res.status(500).json({ error: "Search failed" });
   }
 };
+
+//  GET all found items (for dashboard)
+exports.getAllFoundItems = async (req, res) => {
+  try {
+    const items = await FoundItem.find().sort({ dateFound: -1 });
+    res.json(items);
+  } catch (err) {
+    console.error("Get found items error:", err.message || err);
+    res.status(500).json({ error: "Failed to fetch found items" });
+  }
+};
+

@@ -3,13 +3,12 @@ const router = express.Router();
 const authMiddleware = require("../middleware/authMiddleware");
 const {
   createLostItem,
-  searchLostItems
+  searchLostItems,
+  getAllLostItems
 } = require("../controllers/lostItemController");
 
-// Create a lost item (POST)
+router.get("/", getAllLostItems);
 router.post("/", authMiddleware, createLostItem);
-
-// Search lost items (GET)
 router.get("/search", searchLostItems);
 
 module.exports = router;
