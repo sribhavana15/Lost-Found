@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Anonymous Chat</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
+</head>
+<body>
+  <div class="container">
+    <h4>Anonymous Chat</h4>
+    <form id="chatForm">
+      <div class="input-field">
+        <textarea id="content" class="materialize-textarea" required></textarea>
+        <label for="content" class="active">Type your message</label>
+      </div>
+      <button class="btn orange" type="submit">Send</button>
+    </form>
+    <ul id="messages" class="collection with-header"></ul>
+  </div>
+  <script>
+    document.getElementById("chatForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      await fetch("http://localhost:5050/api/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: document.getElementById("content").value })
+      });
+      document.getElementById("content").value = "";
+      loadMessages();
+    });
+
+    async function loadMessages() {
+      const res = await fetch("http://localhost:5050/api/messages");
+      const messages = await res.json();
+      const list = document.getElementById("messages");
+      list.innerHTML = "";
+      messages.forEach(msg => {
+        const li = document.createElement("li");
+        li.className = "collection-item";
+        li.textContent = `[${new Date(msg.timestamp).toLocaleString()}] ${msg.content}`;
+        list.appendChild(li);
+      });
+    }
+
+    window.onload = loadMessages;
+  </script>
+</body>
+</html>

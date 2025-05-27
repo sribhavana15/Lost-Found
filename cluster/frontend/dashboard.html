@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Dashboard | Lost & Found</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="css/styles.css" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+    <style>
+      .btn {
+        margin: 10px 5px;
+      }
+      .logout-btn {
+        margin-right: 20px;
+      }
+      .scroll-box {
+        max-height: 400px;
+        overflow-y: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navbar -->
+    <nav>
+      <div class="nav-wrapper blue">
+        <a href="#" class="brand-logo center">Lost & Found Dashboard</a>
+        <ul id="nav-mobile" class="right">
+          <li>
+            <a href="#" class="logout-btn" onclick="logout()"
+              ><i class="material-icons left">exit_to_app</i>Logout</a
+            >
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+      <h4 class="center-align">Welcome!</h4>
+
+      <!-- Search -->
+      <div class="input-field">
+        <input
+          type="text"
+          id="searchAll"
+          placeholder="Search lost or found items..."
+        />
+        <label for="searchAll">Search All Items</label>
+      </div>
+
+      <!-- Combined Table -->
+      <div class="scroll-box">
+        <table class="highlight responsive-table">
+          <thead>
+            <tr>
+              <th>Type</th>
+              <th>Item</th>
+              <th>Model</th>
+              <th>Color</th>
+              <th>Location</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody id="itemTable"></tbody>
+        </table>
+      </div>
+
+      <div class="center-align" style="margin-top: 15px">
+        <a href="all-items.html" class="btn blue">Show More</a>
+      </div>
+
+      <!-- Navigation Buttons -->
+      <div class="section center-align">
+        <a href="report-lost.html" class="btn blue waves-effect"
+          >Report Lost Item</a
+        >
+        <a href="report-found.html" class="btn green waves-effect"
+          >Report Found Item</a
+        >
+        <a href="anonymous-chat.html" class="btn orange waves-effect"
+          >Join Chat</a
+        >
+        <a href="admin-panel.html" id="adminBtn" class="btn red waves-effect"
+          >Admin Panel</a
+        >
+      </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script>
+      function logout() {
+        localStorage.removeItem("token");
+        M.toast({ html: "Logged out", classes: "blue lighten-1 rounded" });
+        setTimeout(() => (window.location.href = "login.html"), 1000);
+      }
+
+      const token = localStorage.getItem("token");
+      if (!token) {
+        M.toast({ html: "You must log in first.", classes: "red rounded" });
+        setTimeout(() => (window.location.href = "login.html"), 1500);
+      } else {
+        try {
+          const payload = JSON.parse(atob(token.split(".")[1]));
+          if (payload.role !== "admin") {
+            document.getElementById("adminBtn").style.display = "none";
+          }
+        } catch (e) {
+          M.toast({
+            html: "Invalid session. Please log in again.",
+            classes: "red rounded",
+          });
+          setTimeout(() => logout(), 1500);
+        }
+      }
+
+      let allItemsCache = [];
+
+      document.addEventListener("DOMContentLoaded", () => {
+        loadCombinedItems();
+      });
+
+      async function loadCombinedItems() {
+        const tbody = document.getElementById("itemTable");
+        try {
+          const [lostRes, foundRes] = await Promise.all([
+            fetch("http://localhost:5050/api/lost"),
+            fetch("http://localhost:5050/api/found"),
+          ]);
+          const lost = await lostRes.json();
+          const found = await foundRes.json();
+
+          const allItems = [
+            ...lost.map((item) => ({
+              ...item,
+              type: "Lost",
+              location: item.locationLost,
+              date: item.dateLost,
+            })),
+            ...found.map((item) => ({
+              ...item,
+              type: "Found",
+              location: item.locationFound,
+              date: item.dateFound,
+            })),
+          ];
+
+          allItems.sort((a, b) => new Date(b.date) - new Date(a.date));
+          const latest = allItems.slice(0, 5);
+          allItemsCache = latest;
+          renderTable(latest);
+        } catch (err) {
+          tbody.innerHTML = `<tr><td colspan="6" class="red-text">Error loading items</td></tr>`;
+        }
+      }
+
+      function renderTable(data) {
+        const tbody = document.getElementById("itemTable");
+        if (!data.length) {
+          tbody.innerHTML = `<tr><td colspan="6" class="red-text">No items found</td></tr>`;
+          return;
+        }
+        tbody.innerHTML = data
+          .map(
+            (item) => `
+        <tr>
+          <td>${item.type}</td>
+          <td>${item.name}</td>
+          <td>${item.model}</td>
+          <td>${item.color}</td>
+          <td>${item.location}</td>
+          <td>${new Date(item.date).toLocaleDateString()}</td>
+        </tr>
+      `
+          )
+          .join("");
+      }
+
+      document
+        .getElementById("searchAll")
+        .addEventListener("input", function () {
+          const query = this.value.toLowerCase().trim();
+          const filtered = allItemsCache.filter(
+            (item) =>
+              item.name.toLowerCase().includes(query) ||
+              item.model.toLowerCase().includes(query) ||
+              item.color.toLowerCase().includes(query) ||
+              item.location.toLowerCase().includes(query)
+          );
+          renderTable(filtered);
+        });
+    </script>
+  </body>
+</html>

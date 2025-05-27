@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Panel</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
+</head>
+<body>
+  <div class="container">
+    <h4>Admin Panel</h4>
+    <ul id="lostItems" class="collection with-header"><li class="collection-header"><h5>Lost Items</h5></li></ul>
+    <ul id="foundItems" class="collection with-header"><li class="collection-header"><h5>Found Items</h5></li></ul>
+    <ul id="chatMessages" class="collection with-header"><li class="collection-header"><h5>Chat Messages</h5></li></ul>
+  </div>
+  <script>
+    async function loadData(endpoint, listId, type) {
+      const res = await fetch(`http://localhost:5050/api/${endpoint}`);
+      const items = await res.json();
+      const list = document.getElementById(listId);
+      list.innerHTML = "";
+      items.forEach(item => {
+        const li = document.createElement("li");
+        li.className = "collection-item";
+        li.textContent = type === "chat" ? item.content : `${item.title} - ${item.model}`;
+        list.appendChild(li);
+      });
+    }
+
+    window.onload = () => {
+      loadData("lost", "lostItems");
+      loadData("found", "foundItems");
+      loadData("messages", "chatMessages", "chat");
+    };
+  </script>
+</body>
+</html>

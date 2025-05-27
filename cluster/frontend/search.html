@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Search Items | Lost & Found</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    body {
+      background: #f4f6f9;
+      padding-top: 40px;
+    }
+    .card-panel {
+      padding: 20px;
+    }
+    .search-result {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h4 class="center-align"> Search Lost & Found Items</h4>
+
+    <!--  Search Filter Form -->
+    <div class="card-panel">
+      <form id="searchForm">
+        <div class="row">
+          <div class="input-field col s12 m6">
+            <input id="keyword" type="text" placeholder="Search by keyword..." />
+            <label for="keyword">Item Name or Description</label>
+          </div>
+
+          <div class="input-field col s12 m4">
+            <select id="category">
+              <option value="" disabled selected>Select category</option>
+              <option value="lost">Lost</option>
+              <option value="found">Found</option>
+            </select>
+            <label>Category</label>
+          </div>
+
+          <div class="input-field col s12 m2">
+            <button type="submit" class="btn blue waves-effect waves-light" style="margin-top: 18px;">
+              <i class="material-icons left">search</i>Search
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!--  Display Results -->
+    <div id="results" class="search-result"></div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      M.FormSelect.init(document.querySelectorAll('select'));
+    });
+
+    const sampleData = [
+      { title: "Blue Backpack", type: "lost", description: "Left in library." },
+      { title: "Silver Watch", type: "found", description: "Found in cafeteria." },
+      { title: "Calculator", type: "lost", description: "Missing from classroom." }
+    ];
+
+    document.getElementById("searchForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      const keyword = document.getElementById("keyword").value.toLowerCase();
+      const category = document.getElementById("category").value;
+
+      const filtered = sampleData.filter(item => {
+        const matchKeyword = keyword === "" || item.title.toLowerCase().includes(keyword) || item.description.toLowerCase().includes(keyword);
+        const matchCategory = !category || item.type === category;
+        return matchKeyword && matchCategory;
+      });
+
+      const resultsDiv = document.getElementById("results");
+      resultsDiv.innerHTML = "";
+
+      if (filtered.length === 0) {
+        resultsDiv.innerHTML = "<p class='red-text'>No items matched your search.</p>";
+      } else {
+        filtered.forEach(item => {
+          resultsDiv.innerHTML += `
+            <div class="card-panel">
+              <strong>${item.title}</strong> <span class="badge ${item.type === 'lost' ? 'red' : 'green'} white-text">${item.type.toUpperCase()}</span>
+              <p>${item.model}</p>
+            </div>
+          `;
+        });
+      }
+    });
+  </script>
+</body>
+</html>

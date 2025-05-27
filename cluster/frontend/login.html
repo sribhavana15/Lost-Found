@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Login | Lost & Found App</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <nav>
+      <div class="nav-wrapper blue">
+        <a href="#" class="brand-logo center">Lost & Found Portal</a>
+      </div>
+    </nav>
+    <div class="container center-form">
+      <div class="card-panel z-depth-3 center-align">
+        <img
+          src="img/img1.jpeg"
+          alt="Lost & Found Logo"
+          class="responsive-img"
+          style="max-height: 80px; margin-bottom: 20px"
+        />
+        <h5>Login to Your Account</h5>
+        <form id="loginForm">
+          <div class="input-field">
+            <input type="email" id="email" required />
+            <label for="email">Email</label>
+          </div>
+          <div class="input-field">
+            <input type="password" id="password" required />
+            <label for="password">Password</label>
+          </div>
+          <button class="btn blue waves-effect waves-light" type="submit">
+            <i class="material-icons left">login</i> Login
+          </button>
+        </form>
+        <p class="center-align" style="margin-top: 20px">
+          Don't have an account? <a href="register.html">Register</a>
+        </p>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script>
+      document
+        .getElementById("loginForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          const email = document.getElementById("email").value;
+          const password = document.getElementById("password").value;
+
+          try {
+            const res = await fetch("http://localhost:5050/api/auth/login", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ email, password }),
+            });
+
+            const data = await res.json();
+            console.log("Login response:", data);
+
+            if (res.ok) {
+              localStorage.setItem("token", data.token);
+              M.toast({ html: "Login successful!", classes: "green rounded" });
+              setTimeout(() => {
+                window.location.href = "dashboard.html"; //  Redirection
+              }, 1000);
+            } else {
+              M.toast({
+                html: data.error || "Login failed",
+                classes: "red rounded",
+              });
+            }
+          } catch (error) {
+            console.error("Login error:", error);
+            M.toast({
+              html: "Unexpected error occurred",
+              classes: "red rounded",
+            });
+          }
+        });
+    </script>
+  </body>
+</html>

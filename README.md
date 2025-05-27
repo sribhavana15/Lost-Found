@@ -18,7 +18,7 @@ As the Frontend Developer for the Lost & Found Web Application, I was responsibl
 
 - **Image Assets**  
   Managed UI-related image assets (`img.webp`, `img1.jpeg`) and ensured proper layout integration.
- 
+
 ### Tools & Technologies
 
 - HTML5, CSS3, JavaScript ES6
@@ -29,3 +29,40 @@ As the Frontend Developer for the Lost & Found Web Application, I was responsibl
 # Lost & Found App – Indraja Backend (Express + MongoDB)
 
 This is the backend service for the Lost & Found Web Application, built with Node.js, Express, and MongoDB. It handles all server-side operations, including user authentication, lost/found item submissions, and database interactions.
+
+# Anay Jayakumar
+
+# Frontend Developer
+
+Developed a number of user-facing pages using HTML, JavaScript, and Materialize CSS.
+
+Intergrated frontend with backend REST APIs using fetch.
+
+Utilized conditional rendering, token-based routing, and admin role logic.
+
+# Tester
+
+Tested authentication, item loading, chat interactions, and role-based access.
+
+Verified API responses, dynamic content rendering, and UI responsiveness.
+
+Manually tested form behaviors for a range of edge cases.
+
+# Validation Engineer
+
+- Email Validation: Used regular expressions to validate proper email format before form submission.
+- Password Validation: Implemented on the backend schema to restrict strong passwords (min length, characters).
+- Form Validation: Added HTML5 validations (e.g., required, type=\"email\"), custom JS validation messages, and user feedback with Materialize toasts.
+- All input fields are marked as required
+- email inputs use regex for format validation
+- Login form shows error toasts for missing/invalid input
+- Passwords validated by backend schema (structure, length)
+- Search inputs strip whitespace and restrict empty searches
+
+# Tech Stack
+
+- HTML5 & Vanilla JavaScript
+- Materialize CSS
+- Fetch API + REST
+- JWT Authentication (Client-side)
+- Regex + HTML5 Validation
