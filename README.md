@@ -25,3 +25,7 @@ As the Frontend Developer for the Lost & Found Web Application, I was responsibl
 - Materialize CSS framework
 - Visual Studio Code
 - Git & GitHub for version control
+
+# Lost & Found App – Indraja Backend (Express + MongoDB)
+
+This is the backend service for the Lost & Found Web Application, built with Node.js, Express, and MongoDB. It handles all server-side operations, including user authentication, lost/found item submissions, and database interactions.
