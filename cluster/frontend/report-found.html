@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Report a Found Item</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
+  <style>
+    .container { margin-top: 50px; max-width: 600px; }
+    .btn { margin-top: 20px; }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h4 class="center-align" role="heading" aria-level="1">Report a Found Item</h4>
+
+    <form id="foundForm">
+      <div class="input-field">
+        <input id="name" type="text" required aria-label="Item name">
+        <label for="name">What item did you find? (e.g., Bag, Phone)</label>
+      </div>
+
+      <div class="input-field">
+        <input id="model" type="text" required aria-label="Item description">
+        <label for="model">Describe the item (brand, size, features)</label>
+      </div>
+
+      <div class="input-field">
+        <input id="color" type="text" required aria-label="Item color">
+        <label for="color">Color of the item</label>
+      </div>
+
+      <div class="input-field">
+        <input id="locationFound" type="text" required aria-label="Location found">
+        <label for="locationFound">Where did you find the item?</label>
+      </div>
+
+      <div class="input-field">
+        <input type="date" id="dateFound" required aria-label="Date found">
+        <label for="dateFound">Date when you found the item</label>
+      </div>
+
+      <button type="submit" class="btn-large green waves-effect waves-light">Submit</button>
+    </form>
+
+    <div class="center-align" style="margin-top: 20px;">
+      <a href="dashboard.html" class="btn grey darken-2">← Back to Dashboard</a>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      M.updateTextFields();
+    });
+
+    document.getElementById("foundForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const token = localStorage.getItem("token");
+      if (!token) return alert("You must be logged in.");
+
+      const itemData = {
+        name: document.getElementById("name").value,
+        model: document.getElementById("model").value,
+        color: document.getElementById("color").value,
+        locationFound: document.getElementById("locationFound").value,
+        dateFound: document.getElementById("dateFound").value
+      };
+
+      try {
+        const res = await fetch("http://localhost:5050/api/found", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
+          },
+          body: JSON.stringify(itemData)
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+          M.toast({ html: "Found item reported!", classes: "green rounded" });
+          document.getElementById("foundForm").reset();
+        } else {
+          M.toast({ html: data.error || "Failed", classes: "red rounded" });
+        }
+      } catch (err) {
+        console.error(err);
+        M.toast({ html: "Server error", classes: "red rounded" });
+      }
+    });
+  </script>
+</body>
+</html>
